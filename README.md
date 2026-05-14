@@ -2,19 +2,19 @@
 
 An end-to-end machine learning pipeline that fine-tunes a Wav2Vec 2.0 transformer model to detect early signs of dementia from human speech patterns. This project engineers a dynamic, stochastic audio augmentation architecture in PyTorch to combat the severe overfitting risks associated with small, HIPAA-constrained medical datasets.
 
-## 📖 Project Overview
+## Project Overview
 Dementia is a neurodegenerative condition affecting memory and communication. Because clinical speech datasets are typically small due to privacy laws, deep learning models often overfit by memorizing baseline background noise rather than learning true acoustic markers of cognitive decline. 
 
 This project solves this by introducing a **stochastic (dynamic) data augmentation pipeline** that alters the audio in RAM on the fly during training, forcing the transformer to learn robust phonetic features. 
 
-## 🏗️ The Baseline Architecture
+## The Baseline Architecture
 This project builds upon the foundational architecture of the open-source [DementiaNet repository](https://github.com/shreyasgite/dementianet). 
 
 The original codebase was debugged, optimized, and run as a control group. Training the Wav2Vec 2.0 model on the un-augmented baseline dataset for 22 epochs resulted in a flat performance ceiling:
 * **Baseline Accuracy:** 77.0%
 * **Baseline Precision:** 77.0%
 
-## 🚀 Engineering Contribution: Stochastic Augmentation
+## Engineering Contribution: Stochastic Augmentation
 To push past the baseline, I engineered a custom dynamic augmentation pipeline using the `audiomentations` library. 
 
 Rather than generating a static folder of distorted audio files (which the model would eventually memorize), this pipeline intercepts the PyTorch dataloader. With a configurable probability threshold (p), it dynamically injects:
@@ -27,7 +27,7 @@ To prevent the aggressive audio distortion from destroying the human speech sign
 
 The study revealed a clear "Goldilocks zone." At p=0.25, the model underperformed (77.08%) due to memorization. At p=0.75, accuracy dropped (72.91%) because aggressive pitch-shifting masked the subtle phonetic markers of dementia. The 50/50 ratio (p=0.50) served as the optimal regularization threshold.
 
-## 📊 Final Results
+## Final Results
 Training the model for 40 epochs utilizing the optimized stochastic pipeline (p=0.50) yielded significant improvements over the baseline:
 
 | Metric | Baseline (Control) | Augmented Model (Optimal) |
@@ -39,7 +39,7 @@ Training the model for 40 epochs utilizing the optimized stochastic pipeline (p=
 
 *(Note: The spike in Precision to 83.6% is particularly critical for medical AI, as minimizing false positives reduces severe psychological distress for healthy patients.)*
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 DementiaNet-Augmented/
@@ -55,7 +55,7 @@ DementiaNet-Augmented/
 └── README.md
 ```
 
-## 🧠 Future Enhancements
+## Future Enhancements
 * **Ensemble Modeling:** Combining the Wav2Vec acoustic analysis with a CNN-LSTM network trained on textual transcripts for multi-modal diagnosis.
 * **Alternative Transformers:** Testing the augmentation pipeline against the HuBERT architecture for potentially stronger high-noise feature extraction.
 * **Dynamic Probability Scaling:** Implementing a system where the intensity of the noise augmentation automatically adjusts based on real-time validation loss spikes during training.
